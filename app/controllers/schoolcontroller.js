@@ -5,7 +5,7 @@ const Classname = require("../model/class.model");
 const Subject = require("../model/subject.model");
 const Section = require("../model/section.model");
 
-exports.School = async (req, res) => {
+exports.school = async (req, res) => {
   try {
     const { registrationNumber } = req.body;
     const { error } = schoolValidation(req.body);
