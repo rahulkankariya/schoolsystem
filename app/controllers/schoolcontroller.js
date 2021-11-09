@@ -268,7 +268,7 @@ exports.books = async (req, res) => {
       } else {
         res.status(400).send({
           success: false,
-          message: "Books Are Already Exist",
+          message: "Books Are Already Existing",
           data: null,
         });
       }
