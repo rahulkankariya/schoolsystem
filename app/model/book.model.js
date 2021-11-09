@@ -15,7 +15,7 @@ const Book = new mangoose.Schema(
     publisherName: {
       type: Array,
     },
-    publisherYear: {
+    publishingYear: {
       type: String,
     },
     part: {
@@ -27,9 +27,9 @@ const Book = new mangoose.Schema(
     language:{
       type:String
     },
-    classNameId: {
+    subjectId: {
       type: Schema.Types.ObjectId,
-      ref: "ClassName",
+      ref: "Subject",
     },
   },
   {

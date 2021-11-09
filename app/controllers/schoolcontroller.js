@@ -4,7 +4,7 @@ const School = require("../model/school.model");
 const Classname = require("../model/class.model");
 const Subject = require("../model/subject.model");
 const Section = require("../model/section.model");
-const Book = require('../model/book.model');
+const Book = require("../model/book.model");
 
 exports.school = async (req, res) => {
   try {
@@ -223,31 +223,40 @@ exports.section = async (req, res) => {
     // console.log(error);
   }
 };
-exports.books = async(req,res)=>{
+exports.books = async (req, res) => {
   try {
-    const { error } =booksValidation(req.body);
+    const { error } = booksValidation(req.body);
     if (error) {
       return res.status(400).send({
         success: false,
         message: "mandatory field error",
         data: error.details[0].message,
       });
-    } 
-    else{
-      const {name,isbn,authorName,publisherName,publishYear,part,edition,language,classNameId}= req.body;
+    } else {
+      const {
+        name,
+        isbn,
+        authorName,
+        publisherName,
+        publishingYear,
+        part,
+        edition,
+        language,
+        subjectId,
+      } = req.body;
       const ExistingBooks = await Book.findOne({ isbn });
-      if(!ExistingBooks){
+      if (!ExistingBooks) {
         const book = new Book({
           _id: new mangose.Types.ObjectId(),
           name,
           isbn,
           authorName,
           publisherName,
-          publishYear,
+          publishingYear,
           part,
           edition,
           language,
-          classNameId
+          subjectId,
         });
         book.save().then((result) => {
           res.status(200).send({
@@ -256,24 +265,22 @@ exports.books = async(req,res)=>{
             data: result,
           });
         });
-      }
-      else{
+      } else {
         res.status(400).send({
-          success:false,
-          message:"Books Are Already Exist",
-          data:null
-        })
+          success: false,
+          message: "Books Are Already Exist",
+          data: null,
+        });
       }
     }
   } catch (error) {
     res.status(400).send({
-      success:false,
-      message:"Books Cannot Insert "+ error,
-      data:error
-    })
+      success: false,
+      message: "Books Cannot Insert " + error,
+      data: error,
+    });
   }
-}
-
+};
 
 // validation
 
@@ -427,7 +434,7 @@ function subjectValidation(validData) {
           message: "Please Enter a  Subject Name",
         };
       }),
-    classNameId: Joi.string()
+    subjectId: Joi.string()
       .required()
       .error(() => {
         return {
@@ -440,7 +447,7 @@ function subjectValidation(validData) {
 
 function sectionValidation(validData) {
   const schema = {
-    classNameId: Joi.string()
+    subjectId: Joi.string()
       .required()
       .error(() => {
         return {
@@ -466,14 +473,18 @@ function booksValidation(validData) {
           message: "Please Enter a Books Name",
         };
       }),
-      isbn:Joi.string().required().error(()=>{
-        return{
-          message:"Please Enter a ISBN NUMBER"
-        }
-      }).regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/gm).error(()=>{
-        return{
-          message:"ISBN is Invalid"
-        }
+    isbn: Joi.string()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a ISBN NUMBER",
+        };
+      })
+      .regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/gm)
+      .error(() => {
+        return {
+          message: "ISBN is Invalid",
+        };
       }),
     authorName: Joi.array()
       .required()
@@ -489,7 +500,7 @@ function booksValidation(validData) {
           message: "Please Enter a Publisher Name",
         };
       }),
-    publishYear: Joi.string()
+    publishingYear: Joi.string()
       .required()
       .error(() => {
         return {
@@ -515,6 +526,13 @@ function booksValidation(validData) {
       .error(() => {
         return {
           message: "Please Enter a Language",
+        };
+      }),
+    subjectId: Joi.string()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Subject ID",
         };
       }),
   };
