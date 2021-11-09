@@ -6,5 +6,6 @@ module.exports = (app) => {
   router.post("/class", schoolDetails.className);
   router.post("/section", schoolDetails.section);
   router.post("/subject", schoolDetails.subject);
+  router.post('/books',schoolDetails.books);
   app.use("/", router);
 };

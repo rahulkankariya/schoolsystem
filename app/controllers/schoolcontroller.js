@@ -4,6 +4,7 @@ const School = require("../model/school.model");
 const Classname = require("../model/class.model");
 const Subject = require("../model/subject.model");
 const Section = require("../model/section.model");
+const Book = require('../model/book.model');
 
 exports.school = async (req, res) => {
   try {
@@ -76,7 +77,7 @@ exports.className = async (req, res) => {
       const name = req.body.name.toLowerCase();
       const { schoolId } = req.body;
       const existingClassName = await Classname.findOne({ name });
-      const existingSchoolId = await School.findOne({ _id:schoolId });
+      const existingSchoolId = await School.findOne({ _id: schoolId });
       const Class = new Classname({
         _id: new mangose.Types.ObjectId(),
         name,
@@ -127,7 +128,7 @@ exports.subject = async (req, res) => {
     } else {
       const { code, classNameId } = req.body;
       const existingSubjectCode = await Subject.findOne({
-        code
+        code,
       });
       const existingClassID = await Classname.findOne({ _id: classNameId });
       // console.log(existingClassID);
@@ -222,6 +223,57 @@ exports.section = async (req, res) => {
     // console.log(error);
   }
 };
+exports.books = async(req,res)=>{
+  try {
+    const { error } =booksValidation(req.body);
+    if (error) {
+      return res.status(400).send({
+        success: false,
+        message: "mandatory field error",
+        data: error.details[0].message,
+      });
+    } 
+    else{
+      const {name,isbn,authorName,publisherName,publishYear,part,edition,language,classNameId}= req.body;
+      const ExistingBooks = await Book.findOne({ isbn });
+      if(!ExistingBooks){
+        const book = new Book({
+          _id: new mangose.Types.ObjectId(),
+          name,
+          isbn,
+          authorName,
+          publisherName,
+          publishYear,
+          part,
+          edition,
+          language,
+          classNameId
+        });
+        book.save().then((result) => {
+          res.status(200).send({
+            success: true,
+            message: "Book  records can inserted",
+            data: result,
+          });
+        });
+      }
+      else{
+        res.status(400).send({
+          success:false,
+          message:"Books Are Already Exist",
+          data:null
+        })
+      }
+    }
+  } catch (error) {
+    res.status(400).send({
+      success:false,
+      message:"Books Cannot Insert "+ error,
+      data:error
+    })
+  }
+}
+
 
 // validation
 
@@ -348,7 +400,7 @@ function classValidation(validData) {
           message: "Please Enter a Class Name",
         };
       }),
-      schoolId: Joi.string()
+    schoolId: Joi.string()
       .required()
       .error(() => {
         return {
@@ -375,7 +427,7 @@ function subjectValidation(validData) {
           message: "Please Enter a  Subject Name",
         };
       }),
-      classNameId: Joi.string()
+    classNameId: Joi.string()
       .required()
       .error(() => {
         return {
@@ -400,6 +452,69 @@ function sectionValidation(validData) {
       .error(() => {
         return {
           message: "Please Enter a Section",
+        };
+      }),
+  };
+  return Joi.validate(validData, schema);
+}
+function booksValidation(validData) {
+  const schema = {
+    name: Joi.string()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Books Name",
+        };
+      }),
+      isbn:Joi.string().required().error(()=>{
+        return{
+          message:"Please Enter a ISBN NUMBER"
+        }
+      }).regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/gm).error(()=>{
+        return{
+          message:"ISBN is Invalid"
+        }
+      }),
+    authorName: Joi.array()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Author Name",
+        };
+      }),
+    publisherName: Joi.array()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Publisher Name",
+        };
+      }),
+    publishYear: Joi.string()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Publish Year",
+        };
+      }),
+    part: Joi.array()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Book Part",
+        };
+      }),
+    edition: Joi.array()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Books Edition",
+        };
+      }),
+    language: Joi.string()
+      .required()
+      .error(() => {
+        return {
+          message: "Please Enter a Language",
         };
       }),
   };

@@ -6,10 +6,13 @@ const Book = new mangoose.Schema(
     name: {
       type: String,
     },
+    isbn:{
+      type:String
+    },
     authorName: {
       type: Array,
     },
-    publisher: {
+    publisherName: {
       type: Array,
     },
     publisherYear: {
@@ -20,6 +23,9 @@ const Book = new mangoose.Schema(
     },
     edition: {
       type: Array,
+    },
+    language:{
+      type:String
     },
     classNameId: {
       type: Schema.Types.ObjectId,
