@@ -4,11 +4,8 @@ const School = require("../model/school.model");
 const Classname = require("../model/class.model");
 const Subject = require("../model/subject.model");
 const Section = require("../model/section.model");
-const Book = require("../model/book.model");
-
 exports.school = async (req, res) => {
-  try {
-    const { registrationNumber } = req.body;
+  try{
     const { error } = schoolValidation(req.body);
     if (error) {
       return res.status(400).send({

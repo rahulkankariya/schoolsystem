@@ -6,8 +6,8 @@ const Book = new mangoose.Schema(
     name: {
       type: String,
     },
-    isbn:{
-      type:String
+    isbn: {
+      type: String,
     },
     authorName: {
       type: Array,
@@ -24,8 +24,8 @@ const Book = new mangoose.Schema(
     edition: {
       type: Array,
     },
-    language:{
-      type:String
+    language: {
+      type: String,
     },
     subjectId: {
       type: Schema.Types.ObjectId,
